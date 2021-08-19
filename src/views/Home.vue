@@ -1,18 +1,54 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <ul>
+      <li v-for="(fruit, index) in allfruits" :key="index">{{ fruit.label}} à {{ fruit.prix}} € <a href="" v-if="testConnect" @click.prevent="editFruit(index)">edit</a></li>
+    </ul>
+    <h2>En stock</h2>
+    <ul>
+      <li v-for="(fruit, index) in allFruitsStock" :key="index">{{ fruit.label}} à {{ fruit.prix}} €</li>
+    </ul>
+    <hr>
+    <form @submit.prevent="updateFruit" action="" v-if="testConnect">
+      <input type="text" v-model="selectedFruit.label">
+      <input type="text" v-model="selectedFruit.prix">
+      <input type="checkbox" v-model="selectedFruit.stock">Stock
+      <input type="hidden" v-model="selectedFruit.index">
+      <button>Edit</button>
+      </form>
+    
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
   name: 'Home',
-  components: {
-    HelloWorld
+  computed: {
+    allfruits() {
+      return this.$store.getters.allFruits
+    },
+    allFruitsStock() {
+      return this.$store.getters.stockFruits
+    },
+    testConnect() {
+      return this.$store.getters.testConnect
+    }
+  },
+  data() {
+    return {
+      selectedFruit: {}
+    }
+  },
+  methods: {
+    editFruit(index) {
+      //console.log(index)
+      this.selectedFruit = { ... this.allfruits[index] }
+      this.selectedFruit.index = index
+    },
+    updateFruit() {
+      this.$store.commit("updateFruit", this.selectedFruit)
+    }
   }
 }
 </script>
